@@ -1,24 +1,41 @@
 import shutil
 from pathlib import Path
+import os
 
-src = Path('G:', '/', '_PROJECT FILES', "_Old PROJ NO's", 'CLOSED PROJECTS','COMPLETED PROJECTS', '1000-Bedliners','_Non-Numbered Projects')
-dst = Path('G:\DE\Test Results Archive\XXXX-2021\Tests')
+src = Path(
+    "G:",
+    "/",
+    "_PROJECT FILES",
+    "_Old PROJ NO's",
+    "CLOSED PROJECTS",
+    "COMPLETED PROJECTS",
+    "1000-Bedliners",
+)
+dst = Path("G:\DE\Test Results Archive\XXXX-2021\Tests")
 
-# print(src)
-# print(src.is_dir())
+# Copies only files from src to dst
+def copy_file(src, dst):
+    # if not src.is_dir():
+    #     shutil.copy2(str(Path(src)), dst)
+    for (root, dir, files) in os.walk(src):
+        for y in files:
+            if ".pdf" in y.casefold() or ".xlsx" in y.casefold():
+                print(y)
+        print("----------------------------")
 
-# print(dst)
-# print(dst.is_dir())
 
-for dir in src.iterdir():
-    if dir.is_dir:
-        for sub in dir.iterdir():
-            path_string = str(Path(sub))
-            if ('test' or 'testing') in (path_string.casefold()):
-                if sub.is_dir():
-                    for files in sub.iterdir():
-                        if not files.is_dir() and ('pdf' in str(Path(files)).casefold()):
-                            print(files)
-                            shutil.copy2(str(Path(files)), dst)
-                elif not sub.is_dir() and ('pdf' in path_string):
-                    shutil.copy2(path_string, dst)
+# v2
+# traverses each project
+for project in os.listdir(src):
+
+    # ignore this directory
+    if project == "_Non-Numbered Projects":
+        break
+
+    for (root, dir, files) in os.walk(Path(src, project)):
+        # only looks at ones that has more directories to avoid double inclusion
+        if dir:
+            for test_dir in dir:
+                if ("test" or "testing") in test_dir.casefold() and not ("hot" or "po" or "box") in test_dir.casefold():  # test_dir is now a directory that contain tests
+                    org = Path(root, test_dir)
+                    copy_file(org, None)
