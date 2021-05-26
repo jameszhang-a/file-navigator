@@ -45,12 +45,21 @@ dst = Path(
 
 
 def copy_condition(filepath):
+    """
+    Checks to make sure only certain files are copied
+
+    Args:
+        filepath (Path): The path of the current file to be checked
+
+    Returns:
+        bool: True if passes conditions, False if fails
+    """
     return True
 
 
 def recur_copy(src, dst):
-    """Recursively copies files from source directory to destination
-
+    """
+    Recursively copies files from source directory to destination
 
     Args:
         src (Path): Path to orgin directory
@@ -59,9 +68,11 @@ def recur_copy(src, dst):
     for item in os.listdir(src):
         filepath = Path(src, item)
 
+        # if filepath is a file and what we want, copy
         if os.path.isfile(filepath) and copy_condition(filepath):
             shutil.copy2(filepath, dst)
 
+        # if filepath is another dir, recursion
         elif os.path.isdir(filepath):
             recur_copy(filepath, dst)
 
@@ -87,7 +98,7 @@ for project in os.listdir(src):
         ]
     )
     recur_copy(project, dst)
-    
+
     # for (root, dir, files) in os.walk(Path(src, project)):
     #     # only looks at ones that has more directories to avoid double inclusion
     #     if dir:
